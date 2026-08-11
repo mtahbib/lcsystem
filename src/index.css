@@ -20,8 +20,8 @@ body {
 
 @media print {
   @page {
-    size: auto;
-    margin: 12mm;
+    size: A4;
+    margin: 10mm;
   }
 
   html,
@@ -34,6 +34,10 @@ body {
 
   [data-sonner-toaster] {
     display: none !important;
+  }
+
+  .print-fit {
+    zoom: var(--print-scale, 1);
   }
 }
 

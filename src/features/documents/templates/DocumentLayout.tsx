@@ -19,7 +19,7 @@ export default function DocumentLayout({
   bordered = true,
 }: DocumentLayoutProps) {
   return (
-    <div className="mx-auto max-w-3xl bg-white p-8 text-[13px] text-black print:max-w-none print:p-0">
+    <div className="mx-auto max-w-3xl bg-white p-8 text-[13px] text-black [&_*]:border-black print:max-w-none print:p-0">
       <div className={cn("flex items-start justify-between gap-4", bordered && "border-b pb-4")}>
         <img
           src={logo}

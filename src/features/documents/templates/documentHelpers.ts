@@ -25,7 +25,7 @@ export function formatDate(value: string) {
 }
 
 export function shippingAdviceDescription(v: Vehicle) {
-  return `Year : ${v.year}, CC : ${v.cc}, HS Code : ${v.hsCode}, ENGINE NUMBER: ${v.engineNumber}`;
+  return `Year : ${v.year}, CC : ${v.cc}, HS Code : ${v.hsCode}, COLOR: ${v.color}`;
 }
 
 export function withFallback(text: string, fallback = "Not found") {

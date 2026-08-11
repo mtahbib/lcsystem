@@ -2,7 +2,7 @@ import type { LCRecord, ShipmentRecord, Vehicle } from "@/types/lc";
 import DocumentLayout from "@/features/documents/templates/DocumentLayout";
 import PlainMultilineText from "@/components/common/PlainMultilineText";
 import { numberToWords } from "@/lib/numberToWords";
-import { formatDateShort } from "@/features/documents/templates/documentHelpers";
+import { formatDateShort, withFallback } from "@/features/documents/templates/documentHelpers";
 
 interface Props {
   lc: LCRecord;
@@ -19,7 +19,7 @@ export default function CommercialInvoice({ lc, shipment, vehicle, logo }: Props
       <div className="grid grid-cols-2 gap-8">
         <div>
           <p className="font-bold underline">CUSTOMER DETAILS:</p>
-          <PlainMultilineText text={lc.customer.details} />
+          <PlainMultilineText text={withFallback(lc.customer.details, "(no customer details on file)")} />
         </div>
         <div className="grid grid-cols-[100px_1fr] gap-y-0.5">
           <p className="font-bold">INVOICE NO:</p>

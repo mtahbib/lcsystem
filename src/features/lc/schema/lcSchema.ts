@@ -48,9 +48,6 @@ export const vehicleSchema = z.object({
 
   // Certificate of Origin
   originCertificateNo: z.string(),
-
-  // Shipping Advice
-  engineNumber: z.string(),
 });
 
 export const lcFormSchema = z.object({

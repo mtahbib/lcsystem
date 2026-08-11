@@ -11,6 +11,9 @@ import Shipments from "@/features/shipments/pages/Shipments";
 import Documents from "@/features/documents/pages/Documents";
 import GeneratedDocuments from "@/features/documents/pages/GeneratedDocuments";
 import Settings from "@/features/settings/pages/Settings";
+import ProformaList from "@/features/proforma/pages/ProformaList";
+import ProformaForm from "@/features/proforma/pages/ProformaForm";
+import ProformaView from "@/features/proforma/pages/ProformaView";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,22 @@ const router = createBrowserRouter([
       {
         path: "shipments",
         element: <Shipments />,
+      },
+      {
+        path: "proforma",
+        element: <ProformaList />,
+      },
+      {
+        path: "proforma/new",
+        element: <ProformaForm />,
+      },
+      {
+        path: "proforma/:id/edit",
+        element: <ProformaForm />,
+      },
+      {
+        path: "proforma/:id",
+        element: <ProformaView />,
       },
       {
         path: "documents",

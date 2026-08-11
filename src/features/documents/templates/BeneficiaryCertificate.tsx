@@ -7,6 +7,7 @@ import {
   formatDateShort,
   parseCertifications,
   uniqueJoined,
+  withFallback,
 } from "@/features/documents/templates/documentHelpers";
 
 interface Props {
@@ -32,7 +33,7 @@ export default function BeneficiaryCertificate({
     <DocumentLayout lc={lc} logo={logo} title="CERTIFICATE">
       <div className="border p-2">
         <p className="font-bold underline">CUSTOMER DETAILS:</p>
-        <PlainMultilineText text={lc.customer.details} />
+        <PlainMultilineText text={withFallback(lc.customer.details, "(no customer details on file)")} />
       </div>
 
       <div className="grid grid-cols-2 border">

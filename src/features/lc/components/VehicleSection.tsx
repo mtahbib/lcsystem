@@ -69,7 +69,6 @@ const exportCertificateColumns: {
   { key: "localityOfUse", label: "Locality of Principal Abode of Use" },
   { key: "expiryDate", label: "Effective Date Till Expiry", type: "date" },
   { key: "originCertificateNo", label: "Certificate of Origin No" },
-  { key: "engineNumber", label: "Engine Number" },
 ];
 
 const emptyVehicle: Omit<LCFormValues["vehicles"][number], "id"> = {
@@ -115,7 +114,6 @@ const emptyVehicle: Omit<LCFormValues["vehicles"][number], "id"> = {
   localityOfUse: "",
   expiryDate: "",
   originCertificateNo: "",
-  engineNumber: "",
 };
 
 export default function VehicleSection() {

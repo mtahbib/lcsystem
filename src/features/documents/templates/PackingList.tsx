@@ -2,7 +2,11 @@ import type { LCRecord, ShipmentRecord, Vehicle } from "@/types/lc";
 import DocumentLayout from "@/features/documents/templates/DocumentLayout";
 import PlainMultilineText from "@/components/common/PlainMultilineText";
 import { firstLine } from "@/features/lc/utils";
-import { formatDate, vehicleDescription } from "@/features/documents/templates/documentHelpers";
+import {
+  formatDate,
+  vehicleDescription,
+  withFallback,
+} from "@/features/documents/templates/documentHelpers";
 
 interface Props {
   lc: LCRecord;
@@ -17,7 +21,7 @@ export default function PackingList({ lc, shipment, vehicle, logo }: Props) {
       <div className="grid grid-cols-2 border">
         <div className="border-r p-2">
           <p className="font-bold underline">CUSTOMER DETAILS:</p>
-          <PlainMultilineText text={lc.customer.details} />
+          <PlainMultilineText text={withFallback(lc.customer.details, "(no customer details on file)")} />
         </div>
         <div className="p-2">
           <p>Invoice No: {vehicle.stockId}</p>

@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Printer } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { getLCById } from "@/features/lc/store/lcStore";
-import { getShipmentById } from "@/features/lc/store/shipmentStore";
+import { useLCRecords } from "@/features/lc/store/lcStore";
+import { useShipmentRecords } from "@/features/lc/store/shipmentStore";
 import { useSettings } from "@/features/settings/store/settingsStore";
+import EditDocumentDataDialog from "@/features/documents/components/EditDocumentDataDialog";
+import PrintFitPage from "@/features/documents/components/PrintFitPage";
 import CommercialInvoice from "@/features/documents/templates/CommercialInvoice";
 import PackingList from "@/features/documents/templates/PackingList";
 import BeneficiaryCertificate from "@/features/documents/templates/BeneficiaryCertificate";
@@ -35,8 +37,10 @@ export default function GeneratedDocuments() {
   const [shippingAdviceRecipient, setShippingAdviceRecipient] =
     useState<ShippingAdviceRecipient>("customer");
 
-  const lc = id ? getLCById(id) : undefined;
-  const shipment = shipmentId ? getShipmentById(shipmentId) : undefined;
+  const lcRecords = useLCRecords();
+  const shipmentRecords = useShipmentRecords();
+  const lc = id ? lcRecords.find((r) => r.id === id) : undefined;
+  const shipment = shipmentId ? shipmentRecords.find((r) => r.id === shipmentId) : undefined;
 
   useEffect(() => {
     if (lc && !activeStockId) {
@@ -87,10 +91,13 @@ export default function GeneratedDocuments() {
             LC {lc.lc.lcNumber} · Invoice {vehicle.stockId}
           </p>
         </div>
-        <Button onClick={() => window.print()}>
-          <Printer className="size-4" />
-          Print
-        </Button>
+        <div className="flex gap-2">
+          <EditDocumentDataDialog lc={lc} shipment={shipment} vehicle={vehicle} />
+          <Button onClick={() => window.print()}>
+            <Printer className="size-4" />
+            Print
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 print:hidden">
@@ -144,55 +151,57 @@ export default function GeneratedDocuments() {
       )}
 
       <div className="rounded-xl border bg-slate-50 p-6 print:border-0 print:bg-white print:p-0">
-        {active === "invoice" && (
-          <CommercialInvoice
-            lc={lc}
-            shipment={shipment}
-            vehicle={vehicle}
-            logo={settings.logo}
-          />
-        )}
-        {active === "packing-list" && (
-          <PackingList
-            lc={lc}
-            shipment={shipment}
-            vehicle={vehicle}
-            logo={settings.logo}
-          />
-        )}
-        {active === "beneficiary-certificate" && (
-          <BeneficiaryCertificate
-            lc={lc}
-            shipment={shipment}
-            vehicles={lc.vehicles}
-            logo={settings.logo}
-          />
-        )}
-        {active === "shipping-advice" && (
-          <ShippingAdvice
-            lc={lc}
-            shipment={shipment}
-            vehicles={lc.vehicles}
-            logo={settings.logo}
-            recipient={shippingAdviceRecipient}
-          />
-        )}
-        {active === "export-certificate" && (
-          <ExportCertificate
-            lc={lc}
-            shipment={shipment}
-            vehicle={vehicle}
-            logo={settings.logo}
-          />
-        )}
-        {active === "certificate-of-origin" && (
-          <CertificateOfOrigin
-            lc={lc}
-            shipment={shipment}
-            vehicle={vehicle}
-            logo={settings.logo}
-          />
-        )}
+        <PrintFitPage>
+          {active === "invoice" && (
+            <CommercialInvoice
+              lc={lc}
+              shipment={shipment}
+              vehicle={vehicle}
+              logo={settings.logo}
+            />
+          )}
+          {active === "packing-list" && (
+            <PackingList
+              lc={lc}
+              shipment={shipment}
+              vehicle={vehicle}
+              logo={settings.logo}
+            />
+          )}
+          {active === "beneficiary-certificate" && (
+            <BeneficiaryCertificate
+              lc={lc}
+              shipment={shipment}
+              vehicles={lc.vehicles}
+              logo={settings.logo}
+            />
+          )}
+          {active === "shipping-advice" && (
+            <ShippingAdvice
+              lc={lc}
+              shipment={shipment}
+              vehicles={lc.vehicles}
+              logo={settings.logo}
+              recipient={shippingAdviceRecipient}
+            />
+          )}
+          {active === "export-certificate" && (
+            <ExportCertificate
+              lc={lc}
+              shipment={shipment}
+              vehicle={vehicle}
+              logo={settings.logo}
+            />
+          )}
+          {active === "certificate-of-origin" && (
+            <CertificateOfOrigin
+              lc={lc}
+              shipment={shipment}
+              vehicle={vehicle}
+              logo={settings.logo}
+            />
+          )}
+        </PrintFitPage>
       </div>
     </div>
   );

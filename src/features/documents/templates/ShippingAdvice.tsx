@@ -48,11 +48,11 @@ export default function ShippingAdvice({
       <div className="grid grid-cols-2 gap-8">
         <div>
           <p className="font-semibold">{primary.label}</p>
-          <PlainMultilineText text={primary.text} />
+          <PlainMultilineText text={withFallback(primary.text, `(no ${primary.label.toLowerCase()} on file)`)} />
         </div>
         <div>
           <p className="font-semibold">{secondary.label}</p>
-          <PlainMultilineText text={secondary.text} />
+          <PlainMultilineText text={withFallback(secondary.text, `(no ${secondary.label.toLowerCase()} on file)`)} />
           <p className="mt-2 font-semibold">Date</p>
           <p>{formatDate(shipment.invoiceDate)}</p>
           <p className="mt-2 font-semibold">Cover Note No</p>

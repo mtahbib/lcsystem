@@ -46,9 +46,6 @@ export interface Vehicle {
 
   // Certificate of Origin
   originCertificateNo: string;
-
-  // Shipping Advice
-  engineNumber: string;
 }
 
 export interface LCRecord {

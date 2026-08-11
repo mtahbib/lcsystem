@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   FilePlus2,
   FileText,
+  Receipt,
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ const navItems: {
   disabled?: boolean;
 }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/proforma", label: "Proforma Invoices", icon: Receipt },
   { to: "/lc/new", label: "Create LC", icon: FilePlus2 },
   { to: "/lc", label: "LC Repository", icon: FileText },
   { to: "/settings", label: "Settings", icon: Settings },
