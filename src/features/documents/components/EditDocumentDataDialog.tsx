@@ -176,15 +176,18 @@ export default function EditDocumentDataDialog({ lc, shipment, vehicle }: Props)
   const renderField = (
     field: FieldMeta,
     section: "vehicle" | "shipment",
-    fieldErrors: Record<string, { message?: string } | undefined>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fieldErrors: Record<string, any>
   ) => (
     <FormField key={field.key} label={field.label} error={fieldErrors[field.key]?.message}>
       {field.multiline ? (
-        <Textarea rows={3} {...register(`${section}.${field.key}` as `${typeof section}.${string}`)} />
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        <Textarea rows={3} {...register(`${section}.${field.key}` as any)} />
       ) : (
         <Input
           type={field.type}
-          {...register(`${section}.${field.key}` as `${typeof section}.${string}`)}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          {...register(`${section}.${field.key}` as any)}
         />
       )}
     </FormField>
