@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { BL_LABEL_DEFAULTS } from "@/features/lc/constants/billOfLadingLabels";
+
+const blLabelShape = Object.fromEntries(
+  Object.keys(BL_LABEL_DEFAULTS).map((key) => [key, z.string()])
+) as Record<keyof typeof BL_LABEL_DEFAULTS, z.ZodString>;
 
 export const shipmentFormSchema = z.object({
   invoiceDate: z.string().min(1, "Invoice date is required"),
@@ -30,6 +35,28 @@ export const shipmentFormSchema = z.object({
   insuranceDetails: z.string(),
   bankDetails: z.string(),
   otherRemarks: z.string(),
+
+  // Bill of Lading
+  forwardingAgent: z.string(),
+  carrierName: z.string(),
+  blReferenceNo: z.string(),
+  charterPartyDate: z.string(),
+  freightAgentBlock: z.string(),
+  freightTerms: z.string(),
+  exRate: z.string(),
+  freightPrepaidAt: z.string(),
+  freightPayableAt: z.string(),
+  blIssuePlace: z.string(),
+  blIssueDate: z.string(),
+  totalPrepaidInYen: z.string(),
+  noOfOriginalBL: z.string(),
+  carrierSignatory: z.string(),
+  formVersionNo: z.string(),
+  blTermsText: z.string(),
+  blDeclaredValueClause: z.string(),
+  blAcceptanceText: z.string(),
+
+  ...blLabelShape,
 });
 
 export type ShipmentFormValues = z.infer<typeof shipmentFormSchema>;

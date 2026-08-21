@@ -69,9 +69,18 @@ const exportCertificateColumns: {
   { key: "localityOfUse", label: "Locality of Principal Abode of Use" },
   { key: "expiryDate", label: "Effective Date Till Expiry", type: "date" },
   { key: "originCertificateNo", label: "Certificate of Origin No" },
+
+  // Bill of Lading
+  { key: "blNo", label: "B/L No" },
+  { key: "engineNo", label: "Engine No" },
+  { key: "measurementCbm", label: "Measurement (M3)" },
+  { key: "declaredValue", label: "Declared Value" },
+  { key: "blQuantityText", label: "B/L — Quantity Text" },
+  { key: "blGoodsType", label: "B/L — Goods Type" },
+  { key: "blQuantityWords", label: "B/L — Quantity in Words" },
 ];
 
-const emptyVehicle: Omit<LCFormValues["vehicles"][number], "id"> = {
+export const emptyVehicle: Omit<LCFormValues["vehicles"][number], "id"> = {
   stockId: "",
   model: "",
   year: "",
@@ -114,6 +123,13 @@ const emptyVehicle: Omit<LCFormValues["vehicles"][number], "id"> = {
   localityOfUse: "",
   expiryDate: "",
   originCertificateNo: "",
+  blNo: "",
+  engineNo: "",
+  measurementCbm: "",
+  declaredValue: "",
+  blQuantityText: "1 UNIT(S)",
+  blGoodsType: "USED/RECONDITION VEHICLE",
+  blQuantityWords: "SAY: ONE (1) UNIT(S) ONLY",
 };
 
 export default function VehicleSection() {
@@ -187,7 +203,8 @@ export default function VehicleSection() {
                   <TableRow>
                     <TableCell colSpan={columns.length + 2} className="bg-slate-50 p-4">
                       <p className="mb-3 text-sm font-semibold">
-                        Export Certificate Details — {field.stockId || "this vehicle"}
+                        Export Certificate / Certificate of Origin / Bill of Lading
+                        Details — {field.stockId || "this vehicle"}
                       </p>
                       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-4">
                         {exportCertificateColumns.map((col) => (

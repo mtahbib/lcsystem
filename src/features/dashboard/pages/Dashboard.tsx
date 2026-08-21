@@ -2,13 +2,17 @@ import StatCard from "@/components/common/StatCard";
 import QuickActions from "../components/QuickActions";
 import RecentActivity from "../components/RecentActivity";
 
-import {
-  Clock,
-  FileCheck2,
-  FileText,
-} from "lucide-react";
+import { FileStack, FileText, Receipt } from "lucide-react";
+
+import { useLCRecords } from "@/features/lc/store/lcStore";
+import { useShipmentRecords } from "@/features/lc/store/shipmentStore";
+import { useProformaInvoices } from "@/features/proforma/store/proformaStore";
 
 export default function Dashboard() {
+  const lcRecords = useLCRecords();
+  const shipmentRecords = useShipmentRecords();
+  const proformaRecords = useProformaInvoices();
+
   return (
     <div className="space-y-8">
       <div>
@@ -19,9 +23,17 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <StatCard title="Total LCs" value={0} icon={FileText} />
-        <StatCard title="Pending Documents" value={0} icon={Clock} />
-        <StatCard title="Recently Generated Documents" value={0} icon={FileCheck2} />
+        <StatCard title="Total LCs" value={lcRecords.length} icon={FileText} />
+        <StatCard
+          title="Document Sets Generated"
+          value={shipmentRecords.length}
+          icon={FileStack}
+        />
+        <StatCard
+          title="Proforma Invoices"
+          value={proformaRecords.length}
+          icon={Receipt}
+        />
       </div>
 
       <QuickActions />

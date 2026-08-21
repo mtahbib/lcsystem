@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FileStack, Search } from "lucide-react";
+import { FileStack, Pencil, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +23,14 @@ import {
 import { getLCById, getLCByNumber } from "@/features/lc/store/lcStore";
 import {
   addShipment,
+  getShipmentById,
   getShipmentsForLC,
+  updateShipment,
 } from "@/features/lc/store/shipmentStore";
-import type { LCRecord } from "@/types/lc";
+import type { LCRecord, ShipmentRecord } from "@/types/lc";
 import { firstLine } from "@/features/lc/utils";
 import { formatDate } from "@/features/documents/templates/documentHelpers";
+import { BL_LABEL_DEFAULTS } from "@/features/lc/constants/billOfLadingLabels";
 
 const emptyDefaultValues: ShipmentFormValues = {
   invoiceDate: "",
@@ -53,19 +56,49 @@ const emptyDefaultValues: ShipmentFormValues = {
   insuranceDetails: "",
   bankDetails: "",
   otherRemarks: "",
+  forwardingAgent: "",
+  carrierName: "",
+  blReferenceNo: "",
+  charterPartyDate: "",
+  freightAgentBlock: "",
+  freightTerms: "FREIGHT PREPAID AS ARRANGED",
+  exRate: "",
+  freightPrepaidAt: "",
+  freightPayableAt: "",
+  blIssuePlace: "",
+  blIssueDate: "",
+  totalPrepaidInYen: "",
+  noOfOriginalBL: "",
+  carrierSignatory: "",
+  formVersionNo: "",
+  blTermsText:
+    "Shipped on board the Goods or container(s) or package(s)said to contain Goods marked and numbered as hereunder, in apparent good order and condition unless otherwise indicated here-in, to be transported subject to all the terms and conditions of this Bill of Lading, to the port of discharge named herein and/or such other port or place as authorized or permitted hereby or so near thereto as she may safely get and leave always afloat at all stages and conditions of water and weather, and there to be delivered (if required) to the party entitled thereto, on payment. No representation is made by the Carrier as to the weight, contents, measure, quantity, quality, description,condition,marks,numbers or value of the Goods and the Carrier shall be under no responsibility whatsoever in respect of such description or particulars. One signed Bill of Lading must be surrendered duly endorsed in exchange for the Goods or delivery order.",
+  blDeclaredValueClause: "if no value declared, liability limit applies as per clause 33(4) over leaf.",
+  blAcceptanceText:
+    "In accepting the Bill of Lading, the shipper, owner and consignee of the Goods, and the holder of this Bill of Lading agree to be bound by all its stipulations, exceptions and conditions appearing on the face and back hereof, whether written, stamped, printed or otherwise incorporated, as fully as if they were all signed by such shipper, owner, consignee or holder notwithstanding any local custom or privileges to the contrary. The terms hereof shall not be deemed waived by the Carrier except by written waiver, signed by duly authorized agent of the Carrier. In witness whereof, the original Bills of Lading have been signed, all of this tenor and date, one of which being accomplished, the others to stand void.",
+
+  ...BL_LABEL_DEFAULTS,
 };
 
 function buildDefaultValues(): ShipmentFormValues {
   return { ...emptyDefaultValues };
 }
 
+function shipmentToFormValues(shipment: ShipmentRecord): ShipmentFormValues {
+  const { id, lcId, createdAt, updatedAt, ...values } = shipment;
+  return { ...emptyDefaultValues, ...values };
+}
+
 export default function MasterForm() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { id, shipmentId } = useParams<{ id: string; shipmentId?: string }>();
 
   const [lcNumberInput, setLcNumberInput] = useState("");
   const [lc, setLc] = useState<LCRecord | undefined>(undefined);
   const [notFound, setNotFound] = useState(false);
+  const [editingShipment, setEditingShipment] = useState<ShipmentRecord | undefined>(
+    undefined
+  );
 
   const {
     register,
@@ -83,9 +116,19 @@ export default function MasterForm() {
     if (record) {
       setLc(record);
       setLcNumberInput(record.lc.lcNumber);
+
+      if (shipmentId) {
+        const shipment = getShipmentById(shipmentId);
+        if (shipment) {
+          setEditingShipment(shipment);
+          reset(shipmentToFormValues(shipment));
+          return;
+        }
+      }
+      setEditingShipment(undefined);
       reset(buildDefaultValues());
     }
-  }, [id, reset]);
+  }, [id, shipmentId, reset]);
 
   const pastShipments = useMemo(() => (lc ? getShipmentsForLC(lc.id) : []), [lc]);
 
@@ -98,12 +141,19 @@ export default function MasterForm() {
     }
     setNotFound(false);
     setLc(found);
+    setEditingShipment(undefined);
     reset(buildDefaultValues());
     navigate(`/lc/${found.id}/master-form`, { replace: true });
   };
 
   const onSubmit = (values: ShipmentFormValues) => {
     if (!lc) return;
+    if (editingShipment) {
+      updateShipment(editingShipment.id, values);
+      toast.success("Shipment updated");
+      navigate(`/lc/${lc.id}/shipments/${editingShipment.id}/documents`);
+      return;
+    }
     const shipment = addShipment(lc.id, values);
     toast.success("Shipment saved — generating documents");
     navigate(`/lc/${lc.id}/shipments/${shipment.id}/documents`);
@@ -117,11 +167,13 @@ export default function MasterForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Master Form</h1>
+        <h1 className="text-3xl font-bold">
+          {editingShipment ? "Edit Shipment" : "Master Form"}
+        </h1>
         <p className="mt-2 text-muted-foreground">
-          Enter the LC number to load everything already on file — only shipment
-          details need to be entered here. Each vehicle (Stock ID) will get its own
-          set of documents, with its Invoice No taken from its Stock ID.
+          {editingShipment
+            ? "Editing an existing shipment. Saving updates its documents in place — it will not create a new set."
+            : "Enter the LC number to load everything already on file — only shipment details need to be entered here. Each vehicle (Stock ID) will get its own set of documents, with its Invoice No taken from its Stock ID."}
         </p>
       </div>
 
@@ -189,16 +241,28 @@ export default function MasterForm() {
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 {pastShipments.map((s) => (
-                  <Button
-                    key={s.id}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/lc/${lc.id}/shipments/${s.id}/documents`)}
-                  >
-                    <FileStack className="size-4" />
-                    {formatDate(s.invoiceDate) || "Untitled"}
-                  </Button>
+                  <div key={s.id} className="flex overflow-hidden rounded-lg border">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-none border-r"
+                      onClick={() => navigate(`/lc/${lc.id}/shipments/${s.id}/documents`)}
+                    >
+                      <FileStack className="size-4" />
+                      {formatDate(s.invoiceDate) || "Untitled"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={editingShipment?.id === s.id ? "default" : "ghost"}
+                      size="sm"
+                      className="rounded-none"
+                      onClick={() => navigate(`/lc/${lc.id}/shipments/${s.id}/edit`)}
+                    >
+                      <Pencil className="size-4" />
+                      Edit
+                    </Button>
+                  </div>
                 ))}
               </CardContent>
             </Card>
@@ -353,6 +417,102 @@ export default function MasterForm() {
 
             <Card>
               <CardHeader>
+                <CardTitle>Bill of Lading Details</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <FormField label="Forwarding Agent">
+                  <Input placeholder="YUSEN KOUN" {...register("forwardingAgent")} />
+                </FormField>
+                <FormField label="Carrier Name">
+                  <Input placeholder="EASTERN CAR LINER, LTD." {...register("carrierName")} />
+                </FormField>
+                <FormField label="Reference No">
+                  <Input {...register("blReferenceNo")} />
+                </FormField>
+                <FormField label="Charter Party Dated On">
+                  <Input type="date" {...register("charterPartyDate")} />
+                </FormField>
+                <FormField label="Ex. Rate">
+                  <Input placeholder="¥" {...register("exRate")} />
+                </FormField>
+                <FormField label="Freight Terms">
+                  <Input placeholder="FREIGHT PREPAID AS ARRANGED" {...register("freightTerms")} />
+                </FormField>
+                <FormField label="Freight Prepaid At">
+                  <Input placeholder="TOKYO, JAPAN" {...register("freightPrepaidAt")} />
+                </FormField>
+                <FormField label="Freight Payable At">
+                  <Input {...register("freightPayableAt")} />
+                </FormField>
+                <FormField label="Total Prepaid in Yen">
+                  <Input {...register("totalPrepaidInYen")} />
+                </FormField>
+                <FormField label="Place of Issue">
+                  <Input placeholder="TOKYO, JAPAN" {...register("blIssuePlace")} />
+                </FormField>
+                <FormField label="Date of Issue">
+                  <Input type="date" {...register("blIssueDate")} />
+                </FormField>
+                <FormField label="No. of Original B/L">
+                  <Input placeholder="THREE (3)" {...register("noOfOriginalBL")} />
+                </FormField>
+                <FormField label="Form Version / No.">
+                  <Input placeholder="Version/2021  FORM NO. E" {...register("formVersionNo")} />
+                </FormField>
+                <FormField label="Freight Agent Block" className="md:col-span-2 xl:col-span-3">
+                  <Textarea
+                    rows={5}
+                    placeholder={
+                      "ANCIENT STEAMSHIP COMPANY LIMITED\nHakim Mansion (2nd Floor),\n87 Strand Road, Double Mooring,\nChittagong - 4100, Bangladesh\nTel: +880 233 331 7371-4,\nFax: +880 233 332 7051\nEmail: ops@ancientsteamship.com"
+                    }
+                    {...register("freightAgentBlock")}
+                  />
+                </FormField>
+                <FormField label="Carrier Signatory Block" className="md:col-span-2 xl:col-span-3">
+                  <Textarea
+                    rows={3}
+                    placeholder={
+                      "EASTERN CAR LINER, LTD. AS AGENT\nFOR REGIONAL CAR LINER SDN. BHD.\nAS CARRIER"
+                    }
+                    {...register("carrierSignatory")}
+                  />
+                </FormField>
+                <FormField label="Bill of Lading Terms Paragraph" className="md:col-span-2 xl:col-span-3">
+                  <Textarea rows={5} {...register("blTermsText")} />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    The long clause printed under "BILL OF LADING", above the Consignee
+                    row. Comes pre-filled with the standard wording — edit only if this
+                    carrier uses different terms.
+                  </p>
+                </FormField>
+                <FormField label="Declared Value Clause" className="md:col-span-2 xl:col-span-3">
+                  <Textarea rows={2} {...register("blDeclaredValueClause")} />
+                </FormField>
+                <FormField label="Acceptance / Signature Clause" className="md:col-span-2 xl:col-span-3">
+                  <Textarea rows={5} {...register("blAcceptanceText")} />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    The paragraph printed at the very bottom of the Bill of Lading,
+                    next to the form version number.
+                  </p>
+                </FormField>
+                <p className="text-xs text-muted-foreground md:col-span-2 xl:col-span-3">
+                  Shipper = Beneficiary, Consignee = the Consignee field above (Certificate
+                  of Origin), Notify Party = Customer + Bank Details (Shipping Advice),
+                  Vessel/Voyage/Ports = Shipment Details above. B/L No, Engine No,
+                  Measurement, Declared Value, Quantity Text, Goods Type, and Quantity
+                  in Words are entered per vehicle in the table above.
+                </p>
+                <p className="text-xs text-muted-foreground md:col-span-2 xl:col-span-3">
+                  Every printed heading and column label on the Bill of Lading
+                  (e.g. "Shipper", "Consignee", "Port of Loading") can be edited
+                  from the "Edit [Stock ID]" button on the Generated Documents
+                  page, under "Bill of Lading — Field Labels / Headings".
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Remarks &amp; Additional Information</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
@@ -393,10 +553,20 @@ export default function MasterForm() {
             </Card>
 
             <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => navigate("/lc")}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  editingShipment
+                    ? navigate(`/lc/${lc.id}/shipments/${editingShipment.id}/documents`)
+                    : navigate("/lc")
+                }
+              >
                 Cancel
               </Button>
-              <Button type="submit">Generate Documents</Button>
+              <Button type="submit">
+                {editingShipment ? "Save Changes" : "Generate Documents"}
+              </Button>
             </div>
           </form>
         </>

@@ -17,8 +17,8 @@ const navItems: {
 }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/proforma", label: "Proforma Invoices", icon: Receipt },
-  { to: "/lc/new", label: "Create LC", icon: FilePlus2 },
-  { to: "/lc", label: "LC Repository", icon: FileText },
+  { to: "/lc/new", label: "Create LC", icon: FilePlus2, end: true },
+  { to: "/lc", label: "LC Repository", icon: FileText, end: true },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 

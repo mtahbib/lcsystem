@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Pencil, Printer } from "lucide-react";
 
@@ -13,6 +14,15 @@ export default function ProformaView() {
   const records = useProformaInvoices();
   const settings = useSettings();
   const record = records.find((r) => r.id === id);
+
+  useEffect(() => {
+    if (!record) return;
+    const previousTitle = document.title;
+    document.title = "proformainvoice";
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [record]);
 
   if (!record) {
     return (
@@ -48,7 +58,7 @@ export default function ProformaView() {
 
       <div className="rounded-xl border bg-slate-50 p-6 print:border-0 print:bg-white print:p-0">
         <PrintFitPage>
-          <ProformaInvoiceDocument record={record} logo={settings.logo} />
+          <ProformaInvoiceDocument record={record} logo={settings.proformaLogo} />
         </PrintFitPage>
       </div>
     </div>

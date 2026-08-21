@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FormField from "@/components/common/FormField";
-import VehicleSection from "@/features/lc/components/VehicleSection";
+import VehicleSection, { emptyVehicle } from "@/features/lc/components/VehicleSection";
 import { lcFormSchema, type LCFormValues } from "@/features/lc/schema/lcSchema";
 import { addLC, getLCById, updateLC } from "@/features/lc/store/lcStore";
 
@@ -40,7 +40,12 @@ export default function CreateLC() {
 
   const form = useForm<LCFormValues>({
     resolver: zodResolver(lcFormSchema),
-    defaultValues: existing ?? defaultValues,
+    defaultValues: existing
+      ? {
+          ...existing,
+          vehicles: existing.vehicles.map((v) => ({ ...emptyVehicle, ...v })),
+        }
+      : defaultValues,
   });
 
   const {

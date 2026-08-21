@@ -50,5 +50,7 @@ export interface ProformaInvoiceRecord {
   beneficiaryBranchName: string;
   beneficiaryAccountNo: string;
 
+  lcNotice: string;
+
   vehicles: ProformaVehicle[];
 }

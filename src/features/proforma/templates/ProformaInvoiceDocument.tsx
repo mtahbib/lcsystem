@@ -31,9 +31,9 @@ export default function ProformaInvoiceDocument({ record, logo }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl bg-white p-6 text-[12px] text-black print:max-w-none print:p-0">
-      <div className="flex items-start gap-4">
+      <div className="flex items-start justify-between gap-4 border-b border-black pb-4">
         <img src={logo} alt="Company logo" className="h-16 w-16 shrink-0 object-contain" />
-        <div>
+        <div className="text-right">
           <p className="text-lg font-bold">{record.companyName}</p>
           {record.companyTagline && (
             <p className="text-sm font-semibold text-[#1e3a6e]">{record.companyTagline}</p>
@@ -113,10 +113,9 @@ export default function ProformaInvoiceDocument({ record, logo }: Props) {
         <Field label="ACCOUNT NO" value={record.beneficiaryAccountNo} />
       </div>
 
-      <p className="py-2 font-semibold text-red-600">
-        **For dealing with LC only, we recommend you to ask your bank to channel L/C
-        directly to our above bank in {record.countryOfOrigin || "Japan"}.
-      </p>
+      {record.lcNotice && (
+        <p className="py-2 font-semibold text-red-600">{record.lcNotice}</p>
+      )}
 
       <table className="w-full border-collapse text-left">
         <thead>

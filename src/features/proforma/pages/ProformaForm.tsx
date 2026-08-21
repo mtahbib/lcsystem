@@ -48,6 +48,8 @@ const defaultValues: ProformaFormValues = {
   beneficiaryAccountName: "",
   beneficiaryBranchName: "",
   beneficiaryAccountNo: "",
+  lcNotice:
+    "**For dealing with LC only, we recommend you to ask your bank to channel L/C directly to our above bank in JAPAN.",
   vehicles: [],
 };
 
@@ -219,6 +221,12 @@ export default function ProformaForm() {
               </FormField>
               <FormField label="Account No">
                 <Input {...register("beneficiaryAccountNo")} />
+              </FormField>
+              <FormField label="LC Notice" className="md:col-span-2 xl:col-span-3">
+                <Textarea rows={2} {...register("lcNotice")} />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Printed in red below the bank details on the document.
+                </p>
               </FormField>
             </CardContent>
           </Card>

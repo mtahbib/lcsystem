@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FilePlus2, FileText } from "lucide-react";
+import { FilePlus2, FileText, Receipt } from "lucide-react";
 
 export default function QuickActions() {
   return (
@@ -9,7 +9,7 @@ export default function QuickActions() {
         Quick Actions
       </h2>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Button
           className="h-20 justify-start gap-3"
           render={<Link to="/lc/new" />}
@@ -27,6 +27,16 @@ export default function QuickActions() {
         >
           <FileText />
           View LC Repository
+        </Button>
+
+        <Button
+          variant="outline"
+          className="h-20 justify-start gap-3"
+          render={<Link to="/proforma/new" />}
+          nativeButton={false}
+        >
+          <Receipt />
+          New Proforma Invoice
         </Button>
       </div>
     </div>

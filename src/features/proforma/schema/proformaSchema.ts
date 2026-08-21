@@ -48,6 +48,8 @@ export const proformaFormSchema = z.object({
   beneficiaryBranchName: z.string(),
   beneficiaryAccountNo: z.string(),
 
+  lcNotice: z.string(),
+
   vehicles: z.array(proformaVehicleSchema).min(1, "Add at least one vehicle"),
 });
 

@@ -21,6 +21,7 @@ import { vehicleSchema } from "@/features/lc/schema/lcSchema";
 import { shipmentFormSchema } from "@/features/lc/schema/shipmentSchema";
 import { updateLC } from "@/features/lc/store/lcStore";
 import { updateShipment } from "@/features/lc/store/shipmentStore";
+import { BL_LABEL_FIELDS } from "@/features/lc/constants/billOfLadingLabels";
 import type { LCRecord, ShipmentRecord, Vehicle } from "@/types/lc";
 
 const editSchema = z.object({
@@ -83,6 +84,13 @@ const VEHICLE_CERT_FIELDS: FieldMeta[] = [
   { key: "userAddress", label: "Address of User" },
   { key: "localityOfUse", label: "Locality of Principal Abode of Use" },
   { key: "expiryDate", label: "Effective Date Till Expiry", type: "date" },
+  { key: "blNo", label: "B/L No" },
+  { key: "engineNo", label: "Engine No" },
+  { key: "measurementCbm", label: "Measurement (M3)" },
+  { key: "declaredValue", label: "Declared Value" },
+  { key: "blQuantityText", label: "B/L — Quantity Text" },
+  { key: "blGoodsType", label: "B/L — Goods Type" },
+  { key: "blQuantityWords", label: "B/L — Quantity in Words" },
 ];
 
 const SHIPMENT_CORE_FIELDS: FieldMeta[] = [
@@ -101,6 +109,19 @@ const SHIPMENT_CORE_FIELDS: FieldMeta[] = [
   { key: "shippingMarks", label: "Shipping Marks" },
   { key: "originPlace", label: "Origin Certificate — Place" },
   { key: "exportManager", label: "Export Manager" },
+  { key: "forwardingAgent", label: "B/L — Forwarding Agent" },
+  { key: "carrierName", label: "B/L — Carrier Name" },
+  { key: "blReferenceNo", label: "B/L — Reference No" },
+  { key: "charterPartyDate", label: "B/L — Charter Party Dated On", type: "date" },
+  { key: "freightTerms", label: "B/L — Freight Terms" },
+  { key: "exRate", label: "B/L — Ex. Rate" },
+  { key: "freightPrepaidAt", label: "B/L — Freight Prepaid At" },
+  { key: "freightPayableAt", label: "B/L — Freight Payable At" },
+  { key: "blIssuePlace", label: "B/L — Place of Issue" },
+  { key: "blIssueDate", label: "B/L — Date of Issue", type: "date" },
+  { key: "totalPrepaidInYen", label: "B/L — Total Prepaid in Yen" },
+  { key: "noOfOriginalBL", label: "B/L — No. of Original B/L" },
+  { key: "formVersionNo", label: "B/L — Form Version / No." },
 ];
 
 const SHIPMENT_TEXT_FIELDS: FieldMeta[] = [
@@ -112,6 +133,11 @@ const SHIPMENT_TEXT_FIELDS: FieldMeta[] = [
   { key: "insuranceDetails", label: "Shipping Advice — Insurance Details", multiline: true },
   { key: "bankDetails", label: "Shipping Advice — Bank Details", multiline: true },
   { key: "otherRemarks", label: "Shipping Advice — Other Remarks", multiline: true },
+  { key: "freightAgentBlock", label: "B/L — Freight Agent Block", multiline: true },
+  { key: "carrierSignatory", label: "B/L — Carrier Signatory Block", multiline: true },
+  { key: "blTermsText", label: "B/L — Terms Paragraph", multiline: true },
+  { key: "blDeclaredValueClause", label: "B/L — Declared Value Clause", multiline: true },
+  { key: "blAcceptanceText", label: "B/L — Acceptance / Signature Clause", multiline: true },
 ];
 
 interface Props {
@@ -176,10 +202,12 @@ export default function EditDocumentDataDialog({ lc, shipment, vehicle }: Props)
             Edit Document Data — Stock {vehicle.stockId || "vehicle"}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            These changes apply only to stock {vehicle.stockId} and its documents
-            (Commercial Invoice, Packing List, Export Certificate, Certificate of
-            Origin). Shipment-level fields (vessel, ports, remarks, etc.) are shared
-            across every stock in this shipment.
+            These changes apply only to stock {vehicle.stockId} and its per-vehicle
+            documents (Commercial Invoice, Packing List, Export Certificate,
+            Certificate of Origin, Bill of Lading). Shipment-level fields (vessel,
+            ports, remarks, etc.) are shared across every stock in this shipment,
+            including the Beneficiary Certificate and Shipping Advice, which list
+            all vehicles together.
           </p>
         </DialogHeader>
 
@@ -228,6 +256,15 @@ export default function EditDocumentDataDialog({ lc, shipment, vehicle }: Props)
               {SHIPMENT_TEXT_FIELDS.map((f) =>
                 renderField(f, "shipment", errors.shipment ?? {})
               )}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
+              Bill of Lading — Field Labels / Headings
+            </h3>
+            <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-4">
+              {BL_LABEL_FIELDS.map((f) => renderField(f, "shipment", errors.shipment ?? {}))}
             </div>
           </section>
 

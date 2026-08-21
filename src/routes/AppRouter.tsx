@@ -45,6 +45,10 @@ const router = createBrowserRouter([
         element: <MasterForm />,
       },
       {
+        path: "lc/:id/shipments/:shipmentId/edit",
+        element: <MasterForm />,
+      },
+      {
         path: "lc/:id/shipments/:shipmentId/documents",
         element: <GeneratedDocuments />,
       },

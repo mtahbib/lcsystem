@@ -1,3 +1,5 @@
+import type { BlLabelKey } from "@/features/lc/constants/billOfLadingLabels";
+
 export interface Vehicle {
   id: string;
   stockId: string;
@@ -46,6 +48,15 @@ export interface Vehicle {
 
   // Certificate of Origin
   originCertificateNo: string;
+
+  // Bill of Lading
+  blNo: string;
+  engineNo: string;
+  measurementCbm: string;
+  declaredValue: string;
+  blQuantityText: string;
+  blGoodsType: string;
+  blQuantityWords: string;
 }
 
 export interface LCRecord {
@@ -70,7 +81,7 @@ export interface LCRecord {
   };
 }
 
-export interface ShipmentRecord {
+export interface ShipmentRecord extends Record<BlLabelKey, string> {
   id: string;
   lcId: string;
   createdAt: string;
@@ -105,4 +116,24 @@ export interface ShipmentRecord {
   insuranceDetails: string;
   bankDetails: string;
   otherRemarks: string;
+
+  // Bill of Lading
+  forwardingAgent: string;
+  carrierName: string;
+  blReferenceNo: string;
+  charterPartyDate: string;
+  freightAgentBlock: string;
+  freightTerms: string;
+  exRate: string;
+  freightPrepaidAt: string;
+  freightPayableAt: string;
+  blIssuePlace: string;
+  blIssueDate: string;
+  totalPrepaidInYen: string;
+  noOfOriginalBL: string;
+  carrierSignatory: string;
+  formVersionNo: string;
+  blTermsText: string;
+  blDeclaredValueClause: string;
+  blAcceptanceText: string;
 }

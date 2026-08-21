@@ -14,14 +14,19 @@ export const DEFAULT_LOGO =
 
 interface Settings {
   logo: string;
+  proformaLogo: string;
 }
 
 function readFromStorage(): Settings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Settings) : { logo: DEFAULT_LOGO };
+    const parsed = raw ? (JSON.parse(raw) as Partial<Settings>) : null;
+    return {
+      logo: parsed?.logo ?? DEFAULT_LOGO,
+      proformaLogo: parsed?.proformaLogo ?? DEFAULT_LOGO,
+    };
   } catch {
-    return { logo: DEFAULT_LOGO };
+    return { logo: DEFAULT_LOGO, proformaLogo: DEFAULT_LOGO };
   }
 }
 
@@ -49,6 +54,16 @@ export function setLogo(logo: string) {
 
 export function resetLogo() {
   settings = { ...settings, logo: DEFAULT_LOGO };
+  emit();
+}
+
+export function setProformaLogo(proformaLogo: string) {
+  settings = { ...settings, proformaLogo };
+  emit();
+}
+
+export function resetProformaLogo() {
+  settings = { ...settings, proformaLogo: DEFAULT_LOGO };
   emit();
 }
 

@@ -24,7 +24,7 @@ export default function DocumentLayout({
         <img
           src={logo}
           alt="Company logo"
-          className={cn("object-contain", bordered ? "h-16 w-16" : "h-20 w-auto")}
+          className={cn("object-contain", bordered ? "h-24 w-24" : "h-20 w-auto")}
         />
         <LetterheadText text={lc.beneficiary.details} className="text-right" />
       </div>

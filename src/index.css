@@ -39,6 +39,10 @@ body {
   .print-fit {
     zoom: var(--print-scale, 1);
   }
+
+  .print-page-break:not(:last-child) {
+    break-after: page;
+  }
 }
 
 @theme inline {

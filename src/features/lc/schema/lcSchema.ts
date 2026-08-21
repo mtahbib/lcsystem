@@ -48,6 +48,15 @@ export const vehicleSchema = z.object({
 
   // Certificate of Origin
   originCertificateNo: z.string(),
+
+  // Bill of Lading
+  blNo: z.string(),
+  engineNo: z.string(),
+  measurementCbm: z.string(),
+  declaredValue: z.string(),
+  blQuantityText: z.string(),
+  blGoodsType: z.string(),
+  blQuantityWords: z.string(),
 });
 
 export const lcFormSchema = z.object({

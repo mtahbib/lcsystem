@@ -29,7 +29,7 @@ export function shippingAdviceDescription(v: Vehicle) {
 }
 
 export function withFallback(text: string, fallback = "Not found") {
-  return text.trim().length > 0 ? text : fallback;
+  return text && text.trim().length > 0 ? text : fallback;
 }
 
 export function parseCertifications(text: string) {
@@ -47,6 +47,11 @@ export function parseCertifications(text: string) {
 
 export function uniqueJoined(values: string[], separator = " & ") {
   return Array.from(new Set(values.map((v) => v.trim()).filter(Boolean))).join(separator);
+}
+
+export function buildNotifyParty(customerDetails: string, bankDetails: string) {
+  const parties = [customerDetails, bankDetails].map((t) => t.trim()).filter(Boolean);
+  return parties.map((text, i) => `${i + 1}.) ${text}`).join("\n");
 }
 
 export function formatDateShort(value: string) {
